@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Toronto Neighbourhood Crime Map 2014-2019</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css" rel="stylesheet" />
+<style>
+  body {
+      margin: 0;
+      padding: 0;
+    }
+    h2,
+    h3 {
+      margin: 10px;
+      font-size: 1.2em;
+      text-align: center
+    }
+    h3 {
+      margin: 2px;
+      font-size: 1em;
+      text-align: center
+    }
+    p {
+      font-size: 0.85em;
+      margin: 5px;
+      text-align: center;
+      width: 300px
+    }
+    .map-overlay {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.8);
+      margin-right: 20px;
+      font-family: Arial, sans-serif;
+      overflow: auto;
+      border-radius: 3px;
+    }
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+    #features {
+      top: 0;
+      height: 200px;
+      margin-top: 20px;
+      width: 310px;
+    }
+    #legend {
+      padding: 10px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      line-height: 18px;
+      height: 100px;
+      margin-bottom: 40px;
+      width: 140px;
+    }
+    .legend-key {
+      display: inline-block;
+      border-radius: 40%;
+      width: 30px;
+      height: 15px;
+      margin-bottom: 5px;
+      margin-right: 5px;
+    }
+</style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="map-overlay" id="features">
+    <h2>Crime Rate Toronto: Population by Neighbourhood </h2>
+    <div id="pd"><p>The population rate is:</p></div>
+  </div>
+  <div class="map-overlay" id="legend"></div>
+<script>
+
+mapboxgl.accessToken = 'pk.eyJ1IjoidGhvbWFzanN0ZXdhcnQiLCJhIjoiY2toMTZvNjdiMHRiZTJ2cm53NmFwdHlleSJ9.dFCWf1dOPGDDFeqTWW01bQ'; 
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/thomasjstewart/ckiao6ahi0vb619nkr0ik689w',
+    zoom: 5,
+    center: [-79.357501, 43.626337] 
+  });
+ var layers = ['0-6,577', '6,577-23,055','23,055-39,533','39,533-65,913'];
+ var colors = ['#f52ec0', '#d50bcb', '#e51010', '#f91a1a'];
+for (i = 0; i < layers.length; i++) {
+      var layer = layers[i];
+      var color = colors[i];
+      var item = document.createElement('div');
+      var key = document.createElement('span');
+      key.className = 'legend-key';
+      key.style.backgroundColor = color;
+var value = document.createElement('span');
+      value.innerHTML = layer;
+      item.appendChild(key);
+      item.appendChild(value);
+      legend.appendChild(item);
+    }
+map.on('load', function() {
+      map.getCanvas().style.cursor = 'default';
+      map.fitBounds([
+          [-79.411079, 43.761539],
+          [-79.357501, 43.626337]
+        ]);
+        
+        // change info window on hover
+            // change info window on hover
+        map.on('mousemove', function(e) {
+          let states = map.queryRenderedFeatures(e.point, {
+            layers: ['neighbourhood-crime-rates-1-6ifivw'] // get from the mapbox top left layer information
+          });
+          if (states.length) {
+          console.log(states[0]);
+          document.getElementById('pd').innerHTML =
+        '<h3><strong>' + states[0].properties.Neighbourhood +
+             '<p><br></p>' + "Neighbourhood Population Rate:  "+
+               states[0].properties.Population +
+              '</strong></h3><p><strong><em>'
+          return;
+          }
+
+           else {
+            document.getElementById('pd').innerHTML =
+              '<p>This choropleth map exhibits the average Population rates of Toronto Neighbourhoods between 2014-2019.</p>';
+          }
+        });
+    });
+
+</script>
+</body>
+</html>
